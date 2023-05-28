@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+
+  url_service:
+    restart: always
+    build: .
+    working_dir: /src
+    command: ["/bin/bash", "/scripts/entrypoint.sh"]
+    volumes:
+      - url_service_data:/src
+    env_file:
+      - ./.env
+    ports:
+      - '8000:8000'
+    depends_on:
+      - url_postgres
+    container_name: url_service
+
+  url_postgres:
+    image: postgres:14.5-alpine
+    restart: always
+    user: "70:70"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
+    container_name: url_postgres
+
+volumes:
+  url_service_data:
+  postgres_data:

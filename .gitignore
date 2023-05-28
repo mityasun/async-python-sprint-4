@@ -2,3 +2,8 @@
 .idea/
 __pycache__/
 *.pyc
+/venv/
+/.env
+.env
+/src/.pytest_cache/
+/.pytest_cache/
