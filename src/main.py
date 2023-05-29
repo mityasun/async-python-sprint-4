@@ -3,9 +3,9 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from core.middleware import BlackListMiddleware
 from api.v1 import base
 from core.config import app_settings
+from core.middleware import BlackListMiddleware
 
 app = FastAPI(
     title=app_settings.app_title,
@@ -23,7 +23,10 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=black_list)
 def read_root():
     """Main page with welcome."""
 
-    return app_settings.welcome
+    return (f'Welcome to {app_settings.app_title}! API docs: '
+            f'http://{app_settings.project_host}:{app_settings.project_port}'
+            f'/redoc'
+            )
 
 
 app.include_router(base.router, prefix='/api/v1')

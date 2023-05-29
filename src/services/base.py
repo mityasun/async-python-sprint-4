@@ -1,6 +1,9 @@
+import logging
 from abc import ABC, abstractmethod
+from logging import config as logging_config
 from typing import Any, Generic, Optional, Type, TypeVar
 
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from shortuuid import ShortUUID
@@ -8,9 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from core.config import app_settings
+from core.logger import LOGGING
 from db.db import Base
 from models.short_url import ShortUrl
 from schemas.short_url import UrlHistoryInfo
+
+logging_config.dictConfig(LOGGING)
+logger = logging.getLogger(__name__)
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -129,8 +136,17 @@ class RepositoryDB(
         """Get original url."""
 
         statement = select(self._model).where(self._model.short_id == short_id)
-        results = await db.execute(statement=statement)
-        return results.scalar_one_or_none()
+        result = await db.execute(statement=statement)
+        obj = result.scalar_one_or_none()
+        if not obj:
+            logger.info('Short url not found')
+            raise HTTPException(status_code=400, detail='Short url not found')
+        if obj.del_status:
+            logger.info('Short url was deleted')
+            raise HTTPException(
+                status_code=400, detail='Short url was deleted'
+            )
+        return obj
 
     async def update_usage_count(
             self, db: AsyncSession, db_obj: ModelType

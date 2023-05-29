@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, Query, status, Header
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.v1.mixins import object_is_exist, object_is_deleted
 from core.config import app_settings
 from core.logger import LOGGING
 from db.db import get_session
@@ -85,8 +84,6 @@ async def get_url(
     """Return original url by id."""
 
     obj = await urls_crud.get(db=db, short_id=short_id)
-    object_is_exist(obj)
-    object_is_deleted(obj)
     logger.info(f'Get original url with id: {obj.short_id}')
     await urls_crud.update_usage_count(db=db, db_obj=obj)
     logger.info(f'Update usage count for id: {obj.short_id}')
@@ -113,8 +110,6 @@ async def get_url_status(
     """Get url usage history."""
 
     obj = await urls_crud.get(db=db, short_id=short_id)
-    object_is_exist(obj)
-    object_is_deleted(obj)
     result = await urls_crud.get_status(
         db=db, db_obj=obj, full_info=full_info, limit=max_result, offset=offset
     )
@@ -137,8 +132,6 @@ async def delete_url(
     """Delete short url by id."""
 
     obj = await urls_crud.get(db=db, short_id=short_id)
-    object_is_exist(obj)
-    object_is_deleted(obj)
     await urls_crud.delete(db=db, db_obj=obj)
     logger.info(f'Set del_status to id: {obj.short_id}')
     return JSONResponse(

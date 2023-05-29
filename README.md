@@ -31,9 +31,13 @@ cd async-python-sprint-4
 APP_TITLE='Link shortening service'
 PROJECT_HOST=127.0.0.1
 PROJECT_PORT=8000
+PROJECT_PORT_EXTERNAL=8000
+ENGINE_ECHO=False
 DATABASE_DSN=postgresql+asyncpg://postgres:postgres@url_postgres:5432/postgres
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
+PG_PORT_EXTERNAL=5432
+PG_PORT=5432
 ```
 
 Запустите сборку образа и запуск сервиса из файла Docker-compose:

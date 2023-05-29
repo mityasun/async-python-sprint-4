@@ -12,7 +12,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - '${PROJECT_PORT_EXTERNAL}:${PROJECT_PORT}'
+      - '8000:8000'
     depends_on:
       - url_postgres
     container_name: url_service
@@ -20,13 +20,13 @@ services:
   url_postgres:
     image: postgres:14.5-alpine
     restart: always
-    user: '70:70'
+    user: "70:70"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
     ports:
-      - '${PG_PORT_EXTERNAL}:${PG_PORT}'
+      - "5432:5432"
     container_name: url_postgres
 
 volumes:
